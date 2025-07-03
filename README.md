@@ -34,7 +34,10 @@ This project uses **Compose experimental APIs**, including:
 - `HorizontalUncontainedCarousel`
 - `dragAndDropSource` / `dragAndDropTarget`
 
-These APIs worked well together to enable drag-and-drop with minimal setup and excellent performance. While they wouldn’t be used in production code due to stability concerns, they were suitable for this prototype and allowed for rapid iteration under time constraints.
+These APIs worked well together to enable drag-and-drop with minimal setup and excellent performance.
+
+While they wouldn’t be used in **production code** due to stability concerns, they were suitable for this prototype and allowed for rapid iteration under time constraints.
+
 ---
 
 ## 🔁 Undo / Redo Logic
