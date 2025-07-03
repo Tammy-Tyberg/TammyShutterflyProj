@@ -59,7 +59,6 @@ fun CanvasScreen(
                 )
             },
             onRaiseZIndex = { id -> canvasViewModel.raiseZIndex(id) },
-            onLog = { s -> canvasViewModel.log(s) }
         )
         Spacer(Modifier.padding(16.dp))
         Carousel(items = carouselItems)

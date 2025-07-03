@@ -80,10 +80,6 @@ class CanvasViewModel @Inject constructor(
         }
     }
 
-    fun log(s: String) {
-        Log.wtf("HELPPP", s)
-    }
-
     fun addImage(image: CanvasImage) {
         _images.add(image)
     }

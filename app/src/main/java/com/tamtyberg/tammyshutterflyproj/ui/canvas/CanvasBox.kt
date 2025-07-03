@@ -1,6 +1,5 @@
 package com.tamtyberg.tammyshutterflyproj.ui.canvas
 
-import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -44,7 +43,6 @@ fun CanvasBoxOrig(
     onDrop: (resId: Int, x: Float, y: Float) -> Unit,
     onTransform: (id: Int, startZoom: Float, startPan: Offset, endZoom: Float, endPan: Offset) -> Unit,
     onRaiseZIndex: (id: Int) -> Unit,
-    onLog: (msg: String) -> Unit
 ) {
     var isDraggingOver by remember { mutableStateOf(false) }
     var dropBoxOffset by remember { mutableStateOf(IntOffset.Zero) }
@@ -127,7 +125,6 @@ fun CanvasBoxOrig(
                         .pointerInput(image.id) {
                             detectTransformGesturesWithStartEnd(
                                 onGestureStart = {
-                                    Log.wtf("BOULA", "START")
                                     startScale = image.scale.value
                                     startOffset = image.panOffset.value
                                     onRaiseZIndex(image.id)
@@ -138,7 +135,6 @@ fun CanvasBoxOrig(
                                     image.panOffset.value += pan / image.scale.value
                                 },
                                 onGestureEnd = {
-                                    Log.wtf("BOULA", "ENDDD")
                                     if (startScale != image.scale.value || startOffset != image.panOffset.value) {
                                         onTransform(
                                             image.id,

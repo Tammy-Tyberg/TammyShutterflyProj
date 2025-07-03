@@ -12,15 +12,15 @@ class TransformImageCommand(
     private val toOffset: Offset
 ) : CanvasAction {
     override fun execute() {
-        Log.d(
-            "TransformImageCommand",
-            "exectue image $imageId to scale=$fromScale offset=$fromOffset"
-        )
+//        Log.d(
+//            "TransformImageCommand",
+//            "exectue image $imageId to scale=$fromScale offset=$fromOffset"
+//        )
         viewModel.updateImageTransform(imageId, toScale, toOffset)
     }
 
     override fun undo() {
-        Log.d("TransformImageCommand", "Undo image $imageId to scale=$fromScale offset=$fromOffset")
+//        Log.d("TransformImageCommand", "Undo image $imageId to scale=$fromScale offset=$fromOffset")
         viewModel.updateImageTransform(imageId, fromScale, fromOffset)
     }
 }
