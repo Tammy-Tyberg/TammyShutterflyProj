@@ -1,31 +1,38 @@
 package com.tamtyberg.tammyshutterflyproj.util
 
 import androidx.compose.runtime.mutableStateOf
+import com.tamtyberg.tammyshutterflyproj.UndoRedoManager
 import com.tamtyberg.tammyshutterflyproj.ui.canvas.CanvasAction
+import androidx.compose.runtime.State
+import javax.inject.Inject
 
 
-class UndoRedoManager() {
+class CanvasUndoRedoManager @Inject constructor(): UndoRedoManager {
     private val undoStack = ArrayDeque<CanvasAction>()
     private val redoStack = ArrayDeque<CanvasAction>()
 
-    val canUndo = mutableStateOf(false)
-    val canRedo = mutableStateOf(false)
+    private val _canUndo = mutableStateOf(false)
+    override val canUndo: State<Boolean> get() = _canUndo
 
-    fun hasHistory(): Boolean = undoStack.isNotEmpty() || redoStack.isNotEmpty()
+    private val _canRedo = mutableStateOf(false)
+    override val canRedo: State<Boolean> get() = _canRedo
 
-    fun perform(action: CanvasAction) {
+
+    override fun hasHistory(): Boolean = undoStack.isNotEmpty() || redoStack.isNotEmpty()
+
+    override fun perform(action: CanvasAction) {
         action.execute()
         undoStack.addLast(action)
         redoStack.clear()
         updateFlags()
     }
 
-    fun clearRedo() {
+   override fun clearRedo() {
         redoStack.clear()
         updateFlags()
     }
 
-    fun undo() {
+   override fun undo() {
         undoStack.removeLastOrNull()?.let {
             it.undo()
             redoStack.addLast(it)
@@ -33,7 +40,7 @@ class UndoRedoManager() {
         }
     }
 
-    fun redo() {
+    override fun redo() {
         redoStack.removeLastOrNull()?.let {
             it.execute()
             undoStack.addLast(it)
@@ -42,11 +49,11 @@ class UndoRedoManager() {
     }
 
     private fun updateFlags() {
-        canUndo.value = undoStack.isNotEmpty()
-        canRedo.value = redoStack.isNotEmpty()
+        _canUndo.value = undoStack.isNotEmpty()
+        _canRedo.value = redoStack.isNotEmpty()
     }
 
-    fun clear() {
+    override fun clear() {
         undoStack.clear()
         redoStack.clear()
         updateFlags()

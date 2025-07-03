@@ -6,7 +6,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.geometry.Offset
 import androidx.lifecycle.ViewModel
-import com.tamtyberg.tammyshutterflyproj.util.UndoRedoManager
+import com.tamtyberg.tammyshutterflyproj.util.CanvasUndoRedoManager
 import com.tamtyberg.tammyshutterflyproj.model.CanvasImage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -14,11 +14,12 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 
 @HiltViewModel
-class CanvasViewModel @Inject constructor() : ViewModel() {
-    private val undoRedoManager = UndoRedoManager()
+class CanvasViewModel @Inject constructor(
+    private val canvasUndoRedoManager: CanvasUndoRedoManager
+) : ViewModel() {
 
-    val canUndo = undoRedoManager.canUndo
-    val canRedo = undoRedoManager.canRedo
+    val canUndo = canvasUndoRedoManager.canUndo
+    val canRedo = canvasUndoRedoManager.canRedo
 
     private val _images = mutableStateListOf<CanvasImage>()
     val images: List<CanvasImage> get() = _images
@@ -27,18 +28,18 @@ class CanvasViewModel @Inject constructor() : ViewModel() {
 
     val canClear: State<Boolean>
         get() = derivedStateOf {
-            _images.isNotEmpty() || undoRedoManager.hasHistory()
+            _images.isNotEmpty() || canvasUndoRedoManager.hasHistory()
         }
 
     fun handleDrop(resId: Int, dropX: Float, dropY: Float) {
-        undoRedoManager.clearRedo()
+        canvasUndoRedoManager.clearRedo()
         val ci = CanvasImage(
             resId = resId,
             offsetX = dropX,
             offsetY = dropY,
             zIndex = mutableStateOf(zIndexCounter.floatValue++)
         )
-        undoRedoManager.perform(DropImageCommand(this, ci))
+        canvasUndoRedoManager.perform(DropImageCommand(this, ci))
     }
 
     fun handleTransform(
@@ -53,7 +54,7 @@ class CanvasViewModel @Inject constructor() : ViewModel() {
                 "CanvasViewModel",
                 "handle transform startScale: $startZoom toScale $endZoom startOffset $startPan   toOffset $endPan"
             )
-            undoRedoManager.perform(
+            canvasUndoRedoManager.perform(
                 TransformImageCommand(
                     viewModel = this,
                     imageId = image.id,
@@ -73,9 +74,9 @@ class CanvasViewModel @Inject constructor() : ViewModel() {
     }
 
     fun clearCanvas() {
-        if(_images.isNotEmpty() || undoRedoManager.hasHistory()) {
+        if(_images.isNotEmpty() || canvasUndoRedoManager.hasHistory()) {
             _images.clear()
-            undoRedoManager.clear()
+            canvasUndoRedoManager.clear()
         }
     }
 
@@ -102,6 +103,6 @@ class CanvasViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-    fun onUndo() = undoRedoManager.undo()
-    fun onRedo() = undoRedoManager.redo()
+    fun onUndo() = canvasUndoRedoManager.undo()
+    fun onRedo() = canvasUndoRedoManager.redo()
 }
