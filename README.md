@@ -21,6 +21,7 @@ This is a Kotlin + Compose experiment for interactive gesture-based image placem
 Built with:
 - ✅ Jetpack Compose
 - ✅ Kotlin
+- ✅ Hilt
 - ✅ Mutable state and gesture detection
 - ✅ Undo/Redo Manager using a command pattern
 - 🚧 Experimental APIs (see caveats below)
@@ -50,12 +51,6 @@ Each action — like dropping a sticker or transforming it — is wrapped in a c
 
 Undo/redo stacks store these actions as discrete, reversible units.
 
-| Action Type | Undoable? | Details |
-|-------------|-----------|---------|
-| Drop        | ✅        | Removes the image from canvas |
-| Pan/Zoom    | ✅        | Tracks changes during gesture |
-
-
 ### 🔁 Pan/Zoom Undo Strategy
 
 Pan/zoom is treated as **one atomic action**:
@@ -65,6 +60,69 @@ Pan/zoom is treated as **one atomic action**:
 - This allows us to undo the entire transformation as a single step.
 
 ---
+
+### 🧩 Class Overview
+
+A quick summary of the core classes and how they work together:
+
+#### `CanvasViewModel`
+- Holds the list of `CanvasImage` objects representing all dropped stickers.
+- Exposes state for the canvas and interacts with the `UndoRedoManager`.
+- Delegates drop, pan, zoom, and clear actions to reusable command objects.
+
+#### `CanvasImage`
+- Data model representing a dropped sticker.
+- Tracks position (`offsetX`, `offsetY`), zoom level (`scale`), pan offset (`panOffset`), and `zIndex`.
+- Used directly in rendering and gesture tracking.
+
+#### `UndoRedoManager`
+- Manages two stacks: one for undo, one for redo.
+- Accepts and executes `CanvasAction` objects, which encapsulate reversible operations.
+- Updates UI state (`canUndo`, `canRedo`) as actions are performed or reversed.
+
+#### `CanvasAction` (Interface)
+```kotlin
+interface CanvasAction {
+    fun execute()
+    fun undo()
+}
+```
+
+- Defines a reversible user action (drop, trasnform, etc).
+- Used to decouple action logic from UI state.
+
+#### `DropImageCommand`
+- Adds an image to the canvas on `execute()`.
+- Removes the image on `undo()`.
+
+#### `TransformImageCommand`
+- Applies pan and zoom changes on `execute()`.
+- Restores previous `scale` and `panOffset` values on `undo()`.
+
+---
+
+### 🖼️ UI Components
+
+#### `Carousel` (Composable)
+- Displays a horizontally scrolling list of sticker images using `HorizontalUncontainedCarousel`.
+- Enables drag functionality using `dragAndDropSource`.
+
+#### `CanvasBox` (Composable)
+- The main canvas area where stickers are dropped.
+- Acts as a `dragAndDropTarget`.
+- Attaches gesture detectors for per-image pan and zoom.
+- Updates gesture state via the ViewModel.
+
+#### `CanvasScreen` (Composable)
+- The top-level screen that brings all components together.
+- Hosts the `Carousel`, `CanvasBox`, and the action buttons (`Undo`, `Redo`, `Clear`).
+- Acts as the main layout for the entire drag-and-drop editor experience.
+- Collects and observes state from the `CanvasViewModel` and `CarouselViewModel`.
+---
+
+Together, these components create a **modular and testable drag-and-drop image editor**, where all user interactions are fully reversible and state-driven.
+
+
 
 ### 🧪 Testing (TODO)
 
