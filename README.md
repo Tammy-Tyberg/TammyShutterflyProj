@@ -122,18 +122,6 @@ interface CanvasAction {
 
 Together, these components create a **modular and testable drag-and-drop image editor**, where all user interactions are fully reversible and state-driven.
 
-
-
-### 🧪 Testing (TODO)
-
-Testing is still in progress. Current plans:
-
-- Refactored `UndoRedoManager` to be more modular and testable.
-- Move `CanvasAction` command classes away from referencing `CanvasViewModel` directly — ideally pass in a minimal interface or just a data list.
-- Otherwise create a mock ViewModel or fake image list for unit testing commands in isolation.
-
----
-
 ### 📡 Notes on Data Layer Abstraction
 
 Currently, the carousel date is static — but the code is structured to easily support swapping the data source in the repository (server, database, etc). To adapt:
@@ -145,6 +133,16 @@ Currently, the carousel date is static — but the code is structured to easily 
 ---
 
 ### 🔤 Additional Improvements (Future Work)
+
+#### 🧪 Testing (TODO)
+
+Testing is still in progress. Current plans:
+
+- Refactored `UndoRedoManager` to be more modular and testable.
+- Move `CanvasAction` command classes away from referencing `CanvasViewModel` directly — ideally pass in a minimal interface or just a data list.
+- Otherwise create a mock ViewModel or fake image list for unit testing commands in isolation.
+
+---
 
 - Move hardcoded strings to resource files for localization support
 - Support image rotation as an extra gesture mode
